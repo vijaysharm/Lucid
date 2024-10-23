@@ -33,21 +33,35 @@ protocol MovieCoreManagerProviding {
 public final class CoreManagerContainer {
 
     public struct DiskStoreConfig {
-        public var coreDataManager: CoreDataManager?
-        public var custom: Any?
+        public let coreDataManager: CoreDataManager?
+        public let custom: Any?
 
         public static var coreData: DiskStoreConfig {
             let coreDataManager = CoreDataManager(modelName: "Sample", in: Bundle(for: CoreManagerContainer.self), migrations: [])
             return DiskStoreConfig(coreDataManager: coreDataManager, custom: nil)
         }
+
+        public init(coreDataManager: CoreDataManager?,
+                    custom: Any?) {
+            self.coreDataManager = coreDataManager
+            self.custom = custom
+        }
     }
 
     public struct CacheSize {
-        let small: Int
-        let medium: Int
-        let large: Int
+        public let small: Int
+        public let medium: Int
+        public let large: Int
 
         public static var `default`: CacheSize { return CacheSize(small: 100, medium: 500, large: 2000) }
+
+        public init(small: Int,
+                    medium: Int,
+                    large: Int) {
+            self.small = small
+            self.medium = medium
+            self.large = large
+        }
     }
 
     private let _responseHandler: CoreManagerContainerClientQueueResponseHandler?
@@ -110,7 +124,10 @@ public final class CoreManagerContainer {
         clientQueues.insert(clientQueue)
 
         if let responseHandler = _responseHandler {
-            clientQueues.forEach { $0.register(responseHandler) }
+            let clientQueues = clientQueues
+            Task {
+                await clientQueues.asyncForEach { await $0.register(responseHandler) }
+            }
         }
         self.clientQueues = clientQueues
         self.mainClientQueue = mainClientQueue
@@ -146,6 +163,25 @@ extension CoreManagerContainer: RelationshipCoreManaging {
             ).once.map { $0.lazy.map { .movie($0) }.any }.eraseToAnyPublisher()
         default:
             return Fail(error: .notSupported).eraseToAnyPublisher()
+        }
+    }
+
+    public func get(byIDs identifiers: AnySequence<AnyRelationshipIdentifierConvertible>,
+                    entityType: String,
+                    in context: _ReadContext<EndpointResultPayload>) async throws -> AnySequence<AppAnyEntity> {
+        switch entityType {
+        case GenreIdentifier.entityTypeUID:
+            return try await genreManager.get(
+                byIDs: identifiers.lazy.compactMap { $0.toRelationshipID() }.uniquified(),
+                in: context
+            ).once.lazy.map { .genre($0) }.any
+        case MovieIdentifier.entityTypeUID:
+            return try await movieManager.get(
+                byIDs: identifiers.lazy.compactMap { $0.toRelationshipID() }.uniquified(),
+                in: context
+            ).once.lazy.map { .movie($0) }.any
+        default:
+            throw ManagerError.notSupported
         }
     }
 }

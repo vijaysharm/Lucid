@@ -12,17 +12,15 @@ import Combine
 import UIKit
 
 final class ImageManager {
-
-    @Weaver(.registration, builder: ImageManager.makeMovieDBClient)
     private var movieDBClient: MovieDBClient
 
     @Combine.Published
     private var images = [String: UIImage]()
 
     private let dispatchQueue = DispatchQueue(label: "\(ImageManager.self)")
-
-    init(injecting _: ImageManagerDependencyResolver) {
-        // no-op
+    
+    init(movieDBClient: MovieDBClient) {
+        self.movieDBClient = movieDBClient
     }
 
     func image(for path: String) -> AnyPublisher<UIImage, ManagerError> {
@@ -65,10 +63,8 @@ final class ImageManager {
 // MARK: - Builders
 
 extension ImageManager {
-
-    static func makeMovieDBClient(_: Any) -> MovieDBClient {
+    static func makeMovieDBClient() -> MovieDBClient {
         let configuration = URLSessionConfiguration.default
-        assert(configuration.urlCache != nil, "\(ImageManagerDependencyResolver.self): urlCache should not be nil.")
         configuration.urlCache?.diskCapacity = 1024 * 1024 * 50
         configuration.urlCache?.memoryCapacity = 1024 * 1024 * 5
         let session = URLSession(configuration: configuration)

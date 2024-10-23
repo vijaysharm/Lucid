@@ -31,11 +31,11 @@ extension MovieDBClient {
     func shouldHandleResponse(for requestConfig: APIRequestConfig, completion: @escaping (Result<Void, APIError>) -> Void) {
         completion(.success(()))
     }
-
-    func prepareRequest(_ requestConfig: APIRequestConfig, completion: @escaping (APIRequestConfig) -> Void) {
+    
+    func prepareRequest(_ requestConfig: APIRequestConfig) async -> APIRequestConfig {
         var requestConfig = requestConfig
         requestConfig.query["api_key"] = .value(Constants.apiKey)
-        completion(requestConfig)
+        return requestConfig
     }
 }
 

@@ -17,7 +17,7 @@ final class MovieDetailViewModel: ObservableObject {
     fileprivate var movieGraph: MovieGraph?
 
     @Published
-    fileprivate var movie: Movie
+    public var movie: Movie
 
     fileprivate var cancellables = Set<AnyCancellable>()
 
@@ -36,16 +36,14 @@ final class MovieDetailViewModel: ObservableObject {
 }
 
 final class MovieDetailController {
-
-    @Weaver(.registration)
     private var movieManager: MovieManager
-
-    init(injecting _: MovieDetailControllerDependencyResolver) {
-        // no-op
+    
+    init(movieManager: MovieManager) {
+        self.movieManager = movieManager
     }
 
-    func load(in viewModel: MovieDetailViewModel) {
-        movieManager
+    func load(in viewModel: MovieDetailViewModel) async {
+        try? await movieManager
             .movie(for: viewModel.movie.identifier)
             .replaceError(with: nil)
             .compactMap { $0 }
@@ -56,16 +54,17 @@ final class MovieDetailController {
 }
 
 struct MovieDetail: View {
-
-    @Weaver(.registration)
     private var controller: MovieDetailController
 
     @ObservedObject
     private var viewModel: MovieDetailViewModel
-    // weaver: viewModel <= MovieDetailViewModel
 
-    init(injecting dependencies: MovieDetailDependencyResolver) {
-        self.viewModel = dependencies.viewModel
+    init(
+        controller: MovieDetailController,
+        viewModel: MovieDetailViewModel
+    ) {
+        self.controller = controller
+        self.viewModel = viewModel
     }
 
     var body: some View {
@@ -98,7 +97,9 @@ struct MovieDetail: View {
             }
             Divider()
         }.onAppear {
-            self.controller.load(in: self.viewModel)
+            Task {
+                await self.controller.load(in: self.viewModel)
+            }
         }.onDisappear {
             self.viewModel.cancel()
         }

@@ -147,7 +147,6 @@
 		1965B2A02493E46C0007B6CE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1965B29F2493E46C0007B6CE /* Preview Assets.xcassets */; };
 		1965B2A32493E46C0007B6CE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1965B2A12493E46C0007B6CE /* LaunchScreen.storyboard */; };
 		1965B2C12493F3360007B6CE /* Descriptions in Resources */ = {isa = PBXBuildFile; fileRef = 1965B2C02493F3360007B6CE /* Descriptions */; };
-		1965B2D62493F5520007B6CE /* Weaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1965B2CE2493F5520007B6CE /* Weaver.swift */; };
 		198300912498402B00DFC685 /* MovieManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198300902498402B00DFC685 /* MovieManager.swift */; };
 		19830121249BDE4400DFC685 /* RequestConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19830120249BDE4400DFC685 /* RequestConfig.swift */; };
 		19830123249C1CAA00DFC685 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19830122249C1CAA00DFC685 /* ImageManager.swift */; };
@@ -729,7 +728,6 @@
 		1965B2A22493E46C0007B6CE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1965B2A42493E46C0007B6CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1965B2C02493F3360007B6CE /* Descriptions */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Descriptions; sourceTree = "<group>"; };
-		1965B2CE2493F5520007B6CE /* Weaver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Weaver.swift; sourceTree = "<group>"; };
 		198300902498402B00DFC685 /* MovieManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieManager.swift; sourceTree = "<group>"; };
 		19830120249BDE4400DFC685 /* RequestConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestConfig.swift; sourceTree = "<group>"; };
 		19830122249C1CAA00DFC685 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
@@ -1603,17 +1601,8 @@
 			isa = PBXGroup;
 			children = (
 				191E33D1251D4E600008233A /* Lucid */,
-				1965B2CD2493F5520007B6CE /* Weaver */,
 			);
 			path = Generated;
-			sourceTree = "<group>";
-		};
-		1965B2CD2493F5520007B6CE /* Weaver */ = {
-			isa = PBXGroup;
-			children = (
-				1965B2CE2493F5520007B6CE /* Weaver.swift */,
-			);
-			path = Weaver;
 			sourceTree = "<group>";
 		};
 		1987FA442554A7060057F1CC /* Utils */ = {
@@ -1795,7 +1784,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1965B2AB2493E46C0007B6CE /* Build configuration list for PBXNativeTarget "Sample" */;
 			buildPhases = (
-				1965B2B22493F01D0007B6CE /* Weaver */,
 				1965B2902493E4690007B6CE /* Sources */,
 				1965B2912493E4690007B6CE /* Frameworks */,
 				1965B2922493E4690007B6CE /* Resources */,
@@ -2053,27 +2041,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		1965B2B22493F01D0007B6CE /* Weaver */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = Weaver;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [[ $(weaver version) != *\"1.1.5\"* ]] \nthen\n    echo \"Weaver version isn't 1.1.5.\"\n    exit 1\nfi\n\ncd ${PROJECT_DIR}/Sample && weaver swift \n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		190ADC042458D71000D22F6D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -2273,7 +2240,6 @@
 				191E33E3251D4E600008233A /* EndpointResultPayload.swift in Sources */,
 				191E33EF251D4E600008233A /* EntityIndexValueTypes.swift in Sources */,
 				191E33E6251D4E600008233A /* MovieEndpointPayload.swift in Sources */,
-				1965B2D62493F5520007B6CE /* Weaver.swift in Sources */,
 				1910673824942E6F00E65BA7 /* MovieDBClient.swift in Sources */,
 				191E33EC251D4E600008233A /* EntityGraph.swift in Sources */,
 				191E33ED251D4E600008233A /* Movie.swift in Sources */,

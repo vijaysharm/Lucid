@@ -67,15 +67,12 @@ struct MovieRow: View {
 }
 
 final class MovieListController {
-
-    @Weaver(.registration)
     private var movieManager: MovieManager
-
-    @Weaver(.reference)
     private var imageManager: ImageManager
 
-    init(injecting _: MovieListControllerDependencyResolver) {
-        // no-op
+    init(movieManager: MovieManager, imageManager: ImageManager) {
+        self.movieManager = movieManager
+        self.imageManager = imageManager
     }
 
     fileprivate func load(in viewModel: MovieListViewModel) {
@@ -129,18 +126,19 @@ final class MovieListViewModel: Combine.ObservableObject {
 }
 
 struct MovieList: View {
-
     @ObservedObject
     private var viewModel = MovieListViewModel()
 
-    @Weaver(.registration)
     private var controller: MovieListController
 
-    @WeaverP1(.registration, scope: .transient)
     private var movieDetail: (MovieDetailViewModel) -> MovieDetail
 
-    init(injecting _: MovieListDependencyResolver) {
-        // no-op
+    init(
+        controller: MovieListController,
+        movieDetail: @escaping (MovieDetailViewModel) -> MovieDetail
+    ) {
+        self.controller = controller
+        self.movieDetail = movieDetail
     }
 
     var body: some View {

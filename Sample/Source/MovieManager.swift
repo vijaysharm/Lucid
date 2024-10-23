@@ -66,17 +66,15 @@ struct MovieGraph {
 // MARK: - Manager
 
 final class MovieManager {
-    
-    @Weaver(.reference)
     private var coreManagers: MovieCoreManagerProviding
-
-    init(injecting _: MovieManagerDependencyResolver) {
-        // no-op
+    
+    init(coreManagers: MovieCoreManagerProviding) {
+        self.coreManagers = coreManagers
     }
     
-    func movie(for movieID: MovieIdentifiable) -> AnyPublisher<MovieGraph?, ManagerError> {
+    func movie(for movieID: MovieIdentifiable) async throws -> AnyPublisher<MovieGraph?, ManagerError> {
         let context = ReadContext<Movie>(dataSource: .remoteOrLocal())
-        return coreManagers.movieManager
+        return try await coreManagers.movieManager
             .rootEntity(byID: movieID.movieIdentifier, in: context)
             .including([.genres])
             .perform()

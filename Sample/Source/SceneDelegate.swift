@@ -13,15 +13,6 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-    // Given there are no way to effectively inject dependencies,
-    // getting them from the `UIApplication` singleton.
-    private var dependencies: AppDelegateDependencyResolver {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            fatalError("App delegate is expected of type \(AppDelegate.self)")
-        }
-        return appDelegate.dependencies
-    }
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
 
         UITableView.appearance().allowsSelection = false
@@ -29,7 +20,24 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: dependencies.movieList)
+            let client = ImageManager.makeMovieDBClient()
+            let manager = MovieManager(coreManagers: CoreManagerContainer(
+                cacheSize: .default,
+                client: client,
+                diskStoreConfig: .coreData,
+                responseHandler: nil
+            ))
+            window.rootViewController = UIHostingController(rootView: MovieList(
+                controller: MovieListController(
+                    movieManager: manager,
+                    imageManager: ImageManager(movieDBClient: client)
+                ),
+                movieDetail: { detail in
+                    MovieDetail(
+                        controller: MovieDetailController(movieManager: manager),
+                        viewModel: MovieDetailViewModel(detail.movie)
+                    )
+                }))
             self.window = window
             window.makeKeyAndVisible()
         }

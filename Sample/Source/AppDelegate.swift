@@ -9,24 +9,25 @@
 import UIKit
 import Lucid
 
+class Log: Logging {
+    func loggableErrorString(_ error: any Error) -> String {
+        error.localizedDescription
+    }
+    
+    func recordErrorOnCrashlytics(_ error: any Error) {
+        print("\(error)")
+    }
+    
+    func log(_ type: LogType, _ message: @autoclosure () -> String, domain: String, assert: Bool, file: String, function: String, line: UInt) {
+        print("\(message())")
+    }
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    let dependencies = MainDependencyContainer.appDelegateDependencyResolver()
-    
-    @Weaver(.registration)
-    private var movieDBClient: MovieDBClient
-
-    @Weaver(.registration, builder: CoreManagerContainer.make)
-    private var managers: MovieCoreManagerProviding
-    
-    @Weaver(.registration, scope: .transient)
-    private var movieList: MovieList
-
-    @Weaver(.registration)
-    private var imageManager: ImageManager
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        LucidConfiguration.logger = Log()
         return true
     }
 
@@ -43,14 +44,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// MARK: - Builders
-
-extension CoreManagerContainer {
-
-    static func make(_ dependencies: MovieDBClientResolver) -> CoreManagerContainer {
-        return CoreManagerContainer(cacheSize: .default,
-                                    client: dependencies.movieDBClient,
-                                    diskStoreConfig: .coreData,
-                                    responseHandler: nil)
-    }
-}

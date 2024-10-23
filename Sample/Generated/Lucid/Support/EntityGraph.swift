@@ -79,7 +79,11 @@ final class EntityGraph: MutableGraph {
 
     typealias AnyEntity = AppAnyEntity
 
-    let isDataRemote: Bool
+    let remoteResponseSource: Optional<RemoteResponseSource>
+
+    var isDataRemote: Bool {
+        return remoteResponseSource != nil
+    }
 
     private(set) var rootEntities: Array<AppAnyEntity>
 
@@ -87,12 +91,12 @@ final class EntityGraph: MutableGraph {
     private(set) var genres = OrderedDualHashDictionary<GenreIdentifier, Genre>()
     private(set) var movies = OrderedDualHashDictionary<MovieIdentifier, Movie>()
 
-    convenience init() { self.init(isDataRemote: false) }
+    convenience init() { self.init(remoteResponseSource: nil) }
 
-    convenience init<P>(context: _ReadContext<P>) where P: ResultPayloadConvertible { self.init(isDataRemote: context.responseHeader != nil) }
+    convenience init<P>(context: _ReadContext<P>) where P: ResultPayloadConvertible { self.init(remoteResponseSource: context.remoteResponseSource) }
 
-    private init(isDataRemote: Bool) {
-        self.isDataRemote = isDataRemote
+    private init(remoteResponseSource: Optional<RemoteResponseSource>) {
+        self.remoteResponseSource = remoteResponseSource
         self.rootEntities = []
         self._metadata = nil
     }
@@ -138,11 +142,12 @@ final class EntityGraph: MutableGraph {
 }
 
 extension RelationshipController.RelationshipQuery where Graph == EntityGraph {
-    func perform() -> (once: AnyPublisher<EntityGraph, ManagerError>, continuous: AnyPublisher<EntityGraph, ManagerError>) {
-        let publishers = perform(EntityGraph.self)
+    func buildGraph() async throws -> (once: EntityGraph, continuous: AsyncStream<EntityGraph>) {
+        let result = try await perform(EntityGraph.self)
+
         return (
-            publishers.once.map { $0 as EntityGraph }.eraseToAnyPublisher(),
-            publishers.continuous.map { $0 as EntityGraph }.eraseToAnyPublisher()
+            result.once,
+            result.continuous
         )
     }
 }
