@@ -68,8 +68,8 @@ struct MovieGraph {
 final class MovieManager {
     private var coreManagers: MovieCoreManagerProviding
     
-    init(coreManagers: MovieCoreManagerProviding) {
-        self.coreManagers = coreManagers
+    init(coreManager: MovieCoreManagerProviding) {
+        self.coreManagers = coreManager
     }
     
     func movie(for movieID: MovieIdentifiable) async throws -> AnyPublisher<MovieGraph?, ManagerError> {

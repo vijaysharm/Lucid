@@ -21,20 +21,20 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             let client = ImageManager.makeMovieDBClient()
-            let manager = MovieManager(coreManagers: CoreManagerContainer(
+            let lucid = CoreManagerContainer(
                 cacheSize: .default,
                 client: client,
                 diskStoreConfig: .coreData,
                 responseHandler: nil
-            ))
+            )
             window.rootViewController = UIHostingController(rootView: MovieList(
                 controller: MovieListController(
-                    movieManager: manager,
+                    movieManager: MovieManager(coreManager: lucid),
                     imageManager: ImageManager(movieDBClient: client)
                 ),
                 movieDetail: { detail in
                     MovieDetail(
-                        controller: MovieDetailController(movieManager: manager),
+                        controller: MovieDetailController(movieManager: MovieManager(coreManager: lucid)),
                         viewModel: MovieDetailViewModel(detail.movie)
                     )
                 }))

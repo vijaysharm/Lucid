@@ -87,7 +87,7 @@ extension Logger {
 // MARK: - Default Logger
 
 public final class DefaultLogger: Logging {
-
+    
     public func log(_ type: LogType,
                     _ message: @autoclosure () -> String,
                     domain: String,
@@ -114,6 +114,10 @@ public final class DefaultLogger: Logging {
     public func recordErrorOnCrashlytics(_ error: Error) {
         // no-op
     }
+}
+
+extension DefaultLogger {
+    public static let `default` = DefaultLogger()
 }
 
 extension LogType: CustomStringConvertible {

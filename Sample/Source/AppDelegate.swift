@@ -9,25 +9,11 @@
 import UIKit
 import Lucid
 
-class Log: Logging {
-    func loggableErrorString(_ error: any Error) -> String {
-        error.localizedDescription
-    }
-    
-    func recordErrorOnCrashlytics(_ error: any Error) {
-        print("\(error)")
-    }
-    
-    func log(_ type: LogType, _ message: @autoclosure () -> String, domain: String, assert: Bool, file: String, function: String, line: UInt) {
-        print("\(message())")
-    }
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        LucidConfiguration.logger = Log()
+        LucidConfiguration.logger = DefaultLogger.default
         return true
     }
 
